@@ -293,6 +293,8 @@
 				DEVELOPMENT_TEAM = GKT4V479N9;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = workAtHome/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "카메라를 사용합니다";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "앨범을 사용합니다";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -328,6 +330,8 @@
 				DEVELOPMENT_TEAM = GKT4V479N9;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = workAtHome/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "카메라를 사용합니다";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "앨범을 사용합니다";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;

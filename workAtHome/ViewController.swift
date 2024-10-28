@@ -29,9 +29,9 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
         webView.uiDelegate = self
         webView.navigationDelegate = self
         webViewInit()
-//        if isUpdateAvailable() {
+        if isUpdateAvailable() {
             updateApp()
-//        }
+        }
         
     }
     
@@ -43,9 +43,6 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
         webView.allowsLinkPreview = true
         webView.configuration.dataDetectorTypes = [.all]
         webView.configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
-        
-        // 웹과의 인터페이스
-        webView.configuration.userContentController.add(self, name: "forceQuitApp")
         
         // 줌 세팅
         let zoomSource: String = "var meta = document.createElement('meta');" +
@@ -66,8 +63,11 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
         """
         let logScript = WKUserScript(source: logSource, injectionTime: .atDocumentStart, forMainFrameOnly: false)
         webView.configuration.userContentController.addUserScript(logScript)
-        webView.configuration.userContentController.add(self, name: "logHandler")
         
+        // 웹과의 인터페이스
+        webView.configuration.userContentController.add(self, name: "forceQuitApp")
+        webView.configuration.userContentController.add(self, name: "setDeviceId")
+        webView.configuration.userContentController.add(self, name: "logHandler")
         webView.configuration.userContentController.add(self, name: "updateApp")
         
         // MARK: - URL 띄우기
@@ -170,6 +170,41 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
             exit(0)
         }
     }
+    
+    // MARK: - 단말기 고유정보
+    func getUUID() -> String? {
+            
+            let keychain = KeychainAccess()
+            let uuidKey = "com.myorg.myappid.unique_uuid"
+            
+            if let uuid = try? keychain.queryKeychainData(itemKey: uuidKey), uuid != nil {
+                return uuid
+            }
+            
+            guard let newId = UIDevice.current.identifierForVendor?.uuidString else {
+                return nil
+            }
+            
+            try? keychain.addKeychainData(itemKey: uuidKey, itemValue: newId)
+            
+            return newId
+        }
+        
+        func setDeviceId(deviceId: String) {
+            
+            let deviceInfo = DeviceIds(deviceId: deviceId ?? "Error fetching Device Id")
+            
+            let encoder = JSONEncoder()
+            
+            do {
+                let jsonData = try encoder.encode(deviceInfo)
+                if let deviceIds = String(data: jsonData, encoding: .utf8) {
+                    webView.evaluateJavaScript("NativeInterface.setDeviceId(\(deviceIds));")
+                }
+            } catch {
+                print(error)
+            }
+        }
     
 }
 
@@ -293,6 +328,8 @@ extension ViewController: WKScriptMessageHandler {
             print("console log: \(message.body)")
         case "forceQuitApp":
             exitApp()
+        case "setDeviceId":
+            setDeviceId(deviceId: getUUID()!)
         case "updateApp":
             updateApp()
         default:
