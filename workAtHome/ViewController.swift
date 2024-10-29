@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import TouchEnAppIron
 @preconcurrency import WebKit
 
 class ViewController: UIViewController, UIDocumentInteractionControllerDelegate {
@@ -71,16 +72,19 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
         webView.configuration.userContentController.add(self, name: "updateApp")
         
         // MARK: - URL 띄우기
-//        let myURL = URL(string: "http://dpis.mnd.go.kr:8090") // 운영
-//        //        let myURL = URL(string: "https://m.naver.com") // naver
-//        let myRequest = URLRequest(url: myURL!)
-//        webView.load(myRequest)
+        guard let myURL = URL(string: "http://dpis.mnd.go.kr:8090") else { return exitApp() } // 운영
+        //        //        let myURL = URL(string: "https://m.naver.com") // naver
+        //        let myRequest = URLRequest(url: myURL!)
+        //        webView.load(myRequest)
         
-        // MARK: - 로컬파일 띄우기
-                        let file = Bundle.main.url(forResource: "test", withExtension: "html")!
-                        webView.loadFileURL(file, allowingReadAccessTo: file)
-                        let request = URLRequest(url: file)
-                        webView.load(request)
+        // 로컬파일 띄우기
+        let file = Bundle.main.url(forResource: "test", withExtension: "html")!
+        webView.loadFileURL(file, allowingReadAccessTo: file)
+        let request = URLRequest(url: file)
+        webView.load(request)
+        
+        // 앱 위변조 방지
+        appIronInit(myURL: file)
         
     }
     
@@ -91,6 +95,98 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
     //        alert.addAction(okAction)
     //        present(alert, animated: true, completion: nil)
     //    }
+    
+    // MARK: - 앱 위변조 방지
+    func appIronInit(myURL: URL) {
+        let appIron = TouchEnAppIron(serverDomain: myURL, userValue: "Joseph Cha")
+        appIron.remove { deviceData, error, errorMessage in
+            let data = cryptoUtils.decryt(deviceData as Data)
+            let dic: NSDictionary? = NSKeyedUnarchiver.unarchiveObject(with: data as Data) as? NSDictionary
+            guard let dictionary = dic as? [String: String] else { return }
+            
+            if error.code == 0 {
+                if dictionary["dfgkdfg1"] == "true" && dictionary["dfgkdfg2"] == "true" && dictionary["dfgkdfg3"] == "true"{
+                    self.showToast_in(message: "앱위변조, OS 위변조, 디버깅탐지")
+                    return
+                }
+                if dictionary["dfgkdfg1"] == "true" && dictionary["dfgkdfg2"] == "true" {
+                    self.showToast_in(message: "앱위변조, OS 위변조")
+                    return
+                }
+                if dictionary["dfgkdfg1"] == "true" && dictionary["dfgkdfg3"] == "true" {
+                    self.showToast_in(message: "앱위변조, 디버깅탐지")
+                    return
+                }
+                if dictionary["dfgkdfg2"] == "true" && dictionary["dfgkdfg3"] == "true" {
+                    self.showToast_in(message: "OS 위변조, 디버깅탐지")
+                    return
+                }
+                if dictionary["dfgkdfg1"] == "true" {
+                    self.showToast_in(message: "앱위변조")
+                    return
+                }
+                if dictionary["dfgkdfg2"] == "true" {
+                    self.showToast_in(message: "OS 위변조")
+                    return
+                }
+                if dictionary["dfgkdfg3"] == "true" {
+                    self.showToast_in(message: "디버깅탐지")
+                    return
+                }
+                if dictionary["dfgkdfg1"] == "false" && dictionary["dfgkdfg2"] == "false" && dictionary["dfgkdfg3"] == "false"{
+                    self.showToast_in(message: "정상동작")
+                    return
+                }
+            } else {
+                self.showToast_in(message: "검증 실패\n에러코드: \(error.code) \n에러메시지:\(errorMessage).", isError: true)
+            }
+        }
+    }
+    
+    // Toast
+    func showToast_in(message : String, font: UIFont = UIFont.systemFont(ofSize: 14.0), isDetecting: Bool = false, isError: Bool = false) {
+        var width: CGFloat = 150
+        var height: CGFloat = 35
+        
+        if isError {
+            width = 400
+            height = 70
+            
+        }
+        DispatchQueue.main.async {
+            var toastLabel = UILabel(frame: CGRect(x: self.view.frame.size.width / 2 - 75, y: self.view.frame.size.height - 100, width: width, height: height))
+            if isError {
+                toastLabel = UILabel(frame: CGRect(x: 0, y: self.view.frame.size.height - 100, width: UIScreen.main.bounds.width, height: height))
+            }
+            toastLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+            toastLabel.textColor = UIColor.white
+            toastLabel.font = font
+            toastLabel.textAlignment = .center
+            toastLabel.text = message
+            toastLabel.alpha = 1.0
+            toastLabel.numberOfLines = 3
+            toastLabel.layer.cornerRadius = 10
+            toastLabel.clipsToBounds = true
+            toastLabel.minimumScaleFactor = 0.2
+            self.view.addSubview(toastLabel)
+            if isDetecting {
+                toastLabel.frame = CGRect(x: self.view.frame.size.width / 2 - 75, y: self.view.frame.size.height - 50, width: width, height: height)
+                UIView.animate(withDuration: 1.0, delay: 1, options: .curveEaseOut,
+                               animations: {
+                    toastLabel.alpha = 0.0
+                },completion: {(isCompleted) in
+                    toastLabel.removeFromSuperview()
+                })
+            } else {
+                UIView.animate(withDuration: 2.0, delay: 1, options: .curveEaseOut,
+                               animations: {
+                    toastLabel.alpha = 0.0
+                },completion: {(isCompleted) in
+                    toastLabel.removeFromSuperview()
+                })
+            }
+        }
+    }
     
     // MARK: - 팝업 처리
     // 팝업 열기
@@ -135,7 +231,7 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
         let updateAlert = UIAlertController(title: "업데이트 확인", message: "새로운 버전의 앱이 있습니다. 업데이트 하시겠습니까?", preferredStyle: .alert)
         let updateAction = UIAlertAction(title: "업데이트", style: .default) { _ in
             // TODO: appID 교체하고 주석해제
-//            UIApplication.shared.open(URL(string: "itms-apps://itunes.apple.com/app/id\(appID)")!, options: [:], completionHandler: nil)
+            //            UIApplication.shared.open(URL(string: "itms-apps://itunes.apple.com/app/id\(appID)")!, options: [:], completionHandler: nil)
             UIApplication.shared.open(URL(string: "https://m.naver.com")!, options: [:], completionHandler: nil)
         }
         let cancelAction = UIAlertAction(title: "취소", style: .cancel)
@@ -173,38 +269,38 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
     
     // MARK: - 단말기 고유정보
     func getUUID() -> String? {
-            
-            let keychain = KeychainAccess()
-            let uuidKey = "com.myorg.myappid.unique_uuid"
-            
-            if let uuid = try? keychain.queryKeychainData(itemKey: uuidKey), uuid != nil {
-                return uuid
-            }
-            
-            guard let newId = UIDevice.current.identifierForVendor?.uuidString else {
-                return nil
-            }
-            
-            try? keychain.addKeychainData(itemKey: uuidKey, itemValue: newId)
-            
-            return newId
+        
+        let keychain = KeychainAccess()
+        let uuidKey = "com.myorg.myappid.unique_uuid"
+        
+        if let uuid = try? keychain.queryKeychainData(itemKey: uuidKey), uuid != nil {
+            return uuid
         }
         
-        func setDeviceId(deviceId: String) {
-            
-            let deviceInfo = DeviceIds(deviceId: deviceId ?? "Error fetching Device Id")
-            
-            let encoder = JSONEncoder()
-            
-            do {
-                let jsonData = try encoder.encode(deviceInfo)
-                if let deviceIds = String(data: jsonData, encoding: .utf8) {
-                    webView.evaluateJavaScript("NativeInterface.setDeviceId(\(deviceIds));")
-                }
-            } catch {
-                print(error)
-            }
+        guard let newId = UIDevice.current.identifierForVendor?.uuidString else {
+            return nil
         }
+        
+        try? keychain.addKeychainData(itemKey: uuidKey, itemValue: newId)
+        
+        return newId
+    }
+    
+    func setDeviceId(deviceId: String) {
+        
+        let deviceInfo = DeviceIds(deviceId: deviceId ?? "Error fetching Device Id")
+        
+        let encoder = JSONEncoder()
+        
+        do {
+            let jsonData = try encoder.encode(deviceInfo)
+            if let deviceIds = String(data: jsonData, encoding: .utf8) {
+                webView.evaluateJavaScript("NativeInterface.setDeviceId(\(deviceIds));")
+            }
+        } catch {
+            print(error)
+        }
+    }
     
 }
 

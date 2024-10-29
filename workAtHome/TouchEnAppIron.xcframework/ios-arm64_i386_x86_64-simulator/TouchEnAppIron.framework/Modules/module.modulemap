@@ -1,0 +1,11 @@
+framework module TouchEnAppIron {
+  umbrella header "TouchEnAppIron.h"
+
+  export *
+  module * { export * }
+}
+
+module TouchEnAppIron.Swift {
+    header "TouchEnAppIron-Swift.h"
+    requires objc
+}

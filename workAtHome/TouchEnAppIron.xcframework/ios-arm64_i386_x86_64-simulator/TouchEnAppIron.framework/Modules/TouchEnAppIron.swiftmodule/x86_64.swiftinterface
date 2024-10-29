@@ -1,0 +1,35 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.4.2 (swiftlang-1205.0.28.2 clang-1205.0.19.57)
+// swift-module-flags: -target x86_64-apple-ios9.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name TouchEnAppIron
+import CommonCrypto
+import Foundation
+import MachO
+import Security
+import Swift
+@_exported import TouchEnAppIron
+@objc public class TouchEnAppIron : ObjectiveC.NSObject {
+  @objc public init(serverDomain: Foundation.URL, userValue: Swift.String = "")
+  @objc public func remove(completeCloser: @escaping (@convention(block) (Foundation.Data, AppIronError, Swift.String) -> ()))
+  @objc public static func getFrameworkVersion() -> Swift.String
+  @objc override dynamic public init()
+  @objc deinit
+}
+@objc public enum AppIronError : Swift.Int {
+  case `nil`
+  case workNotFinished
+  case createAppBinaryFail
+  case networkFail
+  case unknown
+  public var code: Swift.Int {
+    get
+  }
+  public func message(msg: Swift.String = "") -> Swift.String
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+extension AppIronError : Swift.Equatable {}
+extension AppIronError : Swift.Hashable {}
+extension AppIronError : Swift.RawRepresentable {}
