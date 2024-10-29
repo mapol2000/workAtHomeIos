@@ -70,6 +70,7 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
         webView.configuration.userContentController.add(self, name: "setDeviceId")
         webView.configuration.userContentController.add(self, name: "logHandler")
         webView.configuration.userContentController.add(self, name: "updateApp")
+        webView.configuration.userContentController.add(self, name: "appIron")
         
         // MARK: - URL 띄우기
         guard let myURL = URL(string: "http://dpis.mnd.go.kr:8090") else { return exitApp() } // 운영
@@ -428,6 +429,8 @@ extension ViewController: WKScriptMessageHandler {
             setDeviceId(deviceId: getUUID()!)
         case "updateApp":
             updateApp()
+        case "appIron":
+            appIronInit(myURL: URL(string: "http://dpis.mnd.go.kr:8090")!)
         default:
             break
         }

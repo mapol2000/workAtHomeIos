@@ -2,7 +2,7 @@
 //  cryptoUtils.m
 //  TouchEnAppIronDemo
 //
-//  Created by Joseph Cha on 2022/01/21.
+//  Created by 김평구 on 10/14/24.
 //
 
 #import "cryptoUtils.h"
