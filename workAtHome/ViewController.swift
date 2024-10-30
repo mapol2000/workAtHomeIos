@@ -71,6 +71,7 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
         webView.configuration.userContentController.add(self, name: "logHandler")
         webView.configuration.userContentController.add(self, name: "updateApp")
         webView.configuration.userContentController.add(self, name: "appIron")
+        webView.configuration.userContentController.add(self, name: "setAppVersion")
         
         // MARK: - URL 띄우기
         guard let myURL = URL(string: "http://dpis.mnd.go.kr:8090") else { return exitApp() } // 운영
@@ -225,6 +226,11 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
         guard let currentVersion, let latestVersion else { return false }
         
         return currentVersion != latestVersion
+    }
+    
+    func setAppVersion() {
+        let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        webView.evaluateJavaScript("NativeInterface.setAppVersion(\(currentVersion ?? "없음"));")
     }
     
     func updateApp() {
@@ -427,6 +433,8 @@ extension ViewController: WKScriptMessageHandler {
             exitApp()
         case "setDeviceId":
             setDeviceId(deviceId: getUUID()!)
+        case "setAppVersion":
+            setAppVersion()
         case "updateApp":
             updateApp()
         case "appIron":

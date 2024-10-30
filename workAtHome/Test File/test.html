@@ -31,6 +31,15 @@
                         console.log("네이티브에서 받은 디바이스 고유ID: " + deviceId);
                         $("#deviceId").text(deviceId);
                     },
+                    
+                    setAppVersion: (appVersion) => {
+                        if (is_iOS) {
+                            var currentVersion = appVersion;
+                        }
+                        
+                        console.log("네이티브에서 받은 앱버전: " + currentVersion);
+                        $("#appVersion").text(currentVersion);
+                    },
                 }
                 
                 $(function() {
@@ -44,6 +53,18 @@
                         // 아이폰
                         if (is_iOS) {
                             webkit.messageHandlers.setDeviceId.postMessage("");
+                        }
+                    });
+                    
+                    // 앱버전 받기 버튼
+                    $("#setAppVersion").click(function() {
+                        // 안드로이드
+                        if (is_Android) {
+                            Android.setDeviceId();
+                        }
+                        // 아이폰
+                        if (is_iOS) {
+                            webkit.messageHandlers.setAppVersion.postMessage("");
                         }
                     });
                     
@@ -101,6 +122,7 @@
         <h1>---개발기능---</h1>
         <ul>
             <li>기기 고유값: <span id="deviceId"></span></li>
+            <li>현재 앱버전: <span id="appVersion"></span></li>
         </ul>
         <span>사진첩/파일</span>
         <input type="file" accept=".txt, .pdf, .jpeg, .jpg, .png"/>
@@ -110,6 +132,7 @@
         <input type="button" id="popup" value="window.open() 팝업"/>
         <input type="button" id="updateApp" value="앱업데이트"/>
         <input type="button" id="setDeviceId" value="기기 고유값 받기"/>
+        <input type="button" id="setAppVersion" value="앱버전 확인"/>
         <input type="button" id="forceQuitApp" value="앱 종료하기"/>
     </body>
 </html>
