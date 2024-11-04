@@ -86,7 +86,16 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
         webView.load(request)
         
         // 앱 위변조 방지
-        appIronInit(myURL: file)
+//        appIronInit(myURL: file)
+        
+        // TODO: - 추후 지울것!
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "", message: "현재는 임시 테스트용으로 만들어졌으며 추후 기능 변경이 있을 수 있습니다.", preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "확인", style: .default) { _ in }
+            alert.addAction(okAction)
+            
+            self.present(alert, animated: true, completion: nil)
+        }
         
     }
     
@@ -234,12 +243,12 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
     }
     
     func updateApp() {
-        let appID = "12345";
+        let appID = "id362057947";
         let updateAlert = UIAlertController(title: "업데이트 확인", message: "새로운 버전의 앱이 있습니다. 업데이트 하시겠습니까?", preferredStyle: .alert)
         let updateAction = UIAlertAction(title: "업데이트", style: .default) { _ in
             // TODO: appID 교체하고 주석해제
-            //            UIApplication.shared.open(URL(string: "itms-apps://itunes.apple.com/app/id\(appID)")!, options: [:], completionHandler: nil)
-            UIApplication.shared.open(URL(string: "https://m.naver.com")!, options: [:], completionHandler: nil)
+            UIApplication.shared.open(URL(string: "itms-apps://itunes.apple.com/app/id\(appID)")!, options: [:], completionHandler: nil)
+//            UIApplication.shared.open(URL(string: "https://apps.apple.com/kr/app/%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1/id362057947")!, options: [:], completionHandler: nil)
         }
         let cancelAction = UIAlertAction(title: "취소", style: .cancel)
         
@@ -317,7 +326,7 @@ extension ViewController: WKUIDelegate, WKNavigationDelegate, WKDownloadDelegate
     // Download
     func download(_ download: WKDownload, decideDestinationUsing response: URLResponse, suggestedFilename: String, completionHandler: @escaping @MainActor @Sendable (URL?) -> Void) {
         
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .allDomainsMask).first!
         let destinationURL = documentsDirectory.appendingPathComponent(suggestedFilename)
         
         let documentInteractionController = UIDocumentInteractionController(url: destinationURL)
