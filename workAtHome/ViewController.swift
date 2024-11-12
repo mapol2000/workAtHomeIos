@@ -54,9 +54,6 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
         let zoomScript: WKUserScript = WKUserScript(source: zoomSource, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
         webView.configuration.userContentController.addUserScript(zoomScript)
         
-        // 캡쳐방지
-        //        NotificationCenter.default.addObserver(self, selector: #selector(didDetectScreenshot), name: UIApplication.userDidTakeScreenshotNotification, object: nil)
-        
         // JS 콘솔로그
         let logSource = """
             function captureLog(msg) { window.webkit.messageHandlers.logHandler.postMessage(msg); }
@@ -74,16 +71,16 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
         webView.configuration.userContentController.add(self, name: "setAppVersion")
         
         // MARK: - URL 띄우기
-        guard let myURL = URL(string: "http://dpis.mnd.go.kr:8090") else { return exitApp() } // 운영
-        //        //        let myURL = URL(string: "https://m.naver.com") // naver
-        //        let myRequest = URLRequest(url: myURL!)
-        //        webView.load(myRequest)
+        guard let myURL = URL(string: "http://dpis.mnd.go.kr:8090/indexDv.do") else { return exitApp() } // 운영
+//        let myURL = URL(string: "https://m.naver.com") // naver
+        let myRequest = URLRequest(url: myURL)
+        webView.load(myRequest)
         
         // 로컬파일 띄우기
-        let file = Bundle.main.url(forResource: "test", withExtension: "html")!
-        webView.loadFileURL(file, allowingReadAccessTo: file)
-        let request = URLRequest(url: file)
-        webView.load(request)
+//        let file = Bundle.main.url(forResource: "test", withExtension: "html")!
+//        webView.loadFileURL(file, allowingReadAccessTo: file)
+//        let request = URLRequest(url: file)
+//        webView.load(request)
         
         // 앱 위변조 방지
 //        appIronInit(myURL: file)
@@ -98,14 +95,6 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
         }
         
     }
-    
-    //    // 캡쳐 방지
-    //    @objc func didDetectScreenshot() {
-    //        let alert = UIAlertController(title: "캡쳐 방지", message: "캡쳐가 불가능합니다.", preferredStyle: .alert)
-    //        let okAction = UIAlertAction(title: "확인", style: .default)
-    //        alert.addAction(okAction)
-    //        present(alert, animated: true, completion: nil)
-    //    }
     
     // MARK: - 앱 위변조 방지
     func appIronInit(myURL: URL) {
