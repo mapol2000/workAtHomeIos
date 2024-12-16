@@ -40,7 +40,7 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
     func webViewInit() {
         
         // 웹뷰 세팅
-        webView.allowsBackForwardNavigationGestures = true
+//        webView.allowsBackForwardNavigationGestures = true // 뒤로가기
         webView.allowsLinkPreview = true
         webView.configuration.dataDetectorTypes = [.all]
         webView.configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
@@ -52,7 +52,7 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
         "var head = document.getElementsByTagName('head')[0];" +
         "head.appendChild(meta);"
         let zoomScript: WKUserScript = WKUserScript(source: zoomSource, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
-        webView.configuration.userContentController.addUserScript(zoomScript)
+//        webView.configuration.userContentController.addUserScript(zoomScript) // 웹에 이미 입혀져있음
         
         // JS 콘솔로그
         let logSource = """
@@ -84,15 +84,6 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
         
         // 앱 위변조 방지
 //        appIronInit(myURL: file)
-        
-        // TODO: - 추후 지울것!
-        DispatchQueue.main.async {
-            let alert = UIAlertController(title: "", message: "현재는 임시 테스트용으로 만들어졌으며 추후 기능 변경이 있을 수 있습니다.", preferredStyle: .alert)
-            let okAction = UIAlertAction(title: "확인", style: .default) { _ in }
-            alert.addAction(okAction)
-            
-            self.present(alert, animated: true, completion: nil)
-        }
         
     }
     
