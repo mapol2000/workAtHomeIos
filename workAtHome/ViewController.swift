@@ -17,6 +17,7 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
     
     // variables
     var popupView: WKWebView?
+    var appIronUrl = URL(string: "https://mauth.mnd.go.kr/ ")!
     
     // actions
     @IBAction func backPressed(_ sender: UIBarButtonItem) {
@@ -83,9 +84,20 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
 //        webView.load(request)
         
         // 앱 위변조 방지
-//        appIronInit(myURL: file)
+        appIronInit(myURL: appIronUrl)
         
     }
+    
+    // ssl 인증 우회
+    func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+            if challenge.protectionSpace.host.contains("mnd.go.kr"){
+                let urlCredential = URLCredential(trust: challenge.protectionSpace.serverTrust!)
+                
+                completionHandler(.useCredential, urlCredential)
+            }else{
+                completionHandler(.performDefaultHandling, nil)
+            }
+        }
     
     // MARK: - 앱 위변조 방지
     func appIronInit(myURL: URL) {
@@ -183,19 +195,22 @@ class ViewController: UIViewController, UIDocumentInteractionControllerDelegate 
     // 팝업 열기
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         
-        toolbar.isHidden = false
+//        toolbar.isHidden = false
+//        
+//        popupView = WKWebView(frame: UIScreen.main.bounds, configuration: configuration)
+//        popupView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+//        popupView?.uiDelegate = self
+//        popupView?.navigationDelegate = self
+//        popupView?.scrollView.isScrollEnabled = false
+//        popupView?.scrollView.bounces = false
+//        popupView?.scrollView.showsVerticalScrollIndicator = false
+//        popupView?.scrollView.showsHorizontalScrollIndicator = false
+//        webView.addSubview(popupView!)
         
-        popupView = WKWebView(frame: UIScreen.main.bounds, configuration: configuration)
-        popupView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        popupView?.uiDelegate = self
-        popupView?.navigationDelegate = self
-        popupView?.scrollView.isScrollEnabled = false
-        popupView?.scrollView.bounces = false
-        popupView?.scrollView.showsVerticalScrollIndicator = false
-        popupView?.scrollView.showsHorizontalScrollIndicator = false
-        webView.addSubview(popupView!)
+//        UIApplication.shared.open(URL(string: "https://chat.mnd.go.kr/dpischat")!)
+        UIApplication.shared.open(URL(string: "https://m.naver.com")!)
         
-        return popupView
+        return nil
     }
     
     // 팝업 닫기
